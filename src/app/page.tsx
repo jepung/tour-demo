@@ -2,12 +2,20 @@
 
 import { useState } from "react";
 import Spotlight from "./components/Spotlight";
+import { IoArrowUndo } from "react-icons/io5";
 
 export default function Page() {
   const [tour, setTour] = useState<{ isTour: boolean; step?: number }>({
     isTour: false,
     step: 0,
   });
+
+  const triggerPermissionTest = async () => {
+    await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+  };
 
   return (
     <div className="w-screen h-screen flex justify-center items-center flex-col">
@@ -32,6 +40,7 @@ export default function Page() {
             </p>
           </div>
         </Spotlight>
+
         <Spotlight
           isEnabled={tour.isTour && tour.step == 1}
           notes={{
@@ -41,8 +50,10 @@ export default function Page() {
           }}
           notesContainerClassName="top-[250px] right-[-500px] w-[500px]"
           onPrev={() => setTour({ ...tour, step: tour.step! - 1 })}
-          onNext={() => setTour({ isTour: false, step: 0 })}
-          isLast
+          onNext={() => {
+            triggerPermissionTest();
+            setTour({ ...tour, step: 2 });
+          }}
         >
           <div className="mt-5 p-5 w-52 border border-black bg-white">
             <p>
@@ -52,6 +63,22 @@ export default function Page() {
           </div>
         </Spotlight>
       </div>
+
+      <Spotlight
+        isEnabled={tour.isTour && tour.step == 2}
+        notesContainerClassName="left-[35%] top-[10%] w-[432px]"
+        notes={{
+          title: "Izinkan Mikrofon & Kamera",
+          content:
+            "Untuk memulai sesi wawancara, Anda perlu menghidupkan Mikrofon & Kamera melalui tombol di atas.",
+        }}
+        onNext={() => setTour({ isTour: false, step: 0 })}
+        icon={<IoArrowUndo size={100} />}
+        iconPosition="top"
+        iconContainerClassName="left-[-20%]"
+        isLast
+      />
+
       <button
         onClick={() => {
           setTour({ isTour: true, step: 0 });

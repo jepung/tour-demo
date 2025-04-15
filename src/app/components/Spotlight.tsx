@@ -2,7 +2,7 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 
 interface ISpotlightProps {
-  children: ReactNode;
+  children?: ReactNode;
   isEnabled: boolean;
   onNext: () => void;
   onPrev?: () => void;
@@ -11,7 +11,10 @@ interface ISpotlightProps {
     content: string;
   };
   isLast?: boolean;
-  notesContainerClassName: string;
+  notesContainerClassName?: string;
+  icon?: ReactNode;
+  iconPosition?: "bottom" | "top";
+  iconContainerClassName?: string;
 }
 
 const Spotlight = ({
@@ -22,6 +25,9 @@ const Spotlight = ({
   onPrev,
   isLast,
   notesContainerClassName,
+  icon,
+  iconPosition,
+  iconContainerClassName,
 }: ISpotlightProps) => {
   const [rect, setRect] = useState<DOMRect>();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -40,11 +46,11 @@ const Spotlight = ({
   }, [contentRef, isEnabled]);
 
   return (
-    <div className="relative">
+    <div className={children ? "relative" : undefined}>
       {isEnabled ? (
         <div className={`z-10`}>
-          <div className="fixed inset-0 bg-black cursor-default z-20">
-            {rect && (
+          <div className="fixed inset-0 bg-black/90 cursor-default z-20">
+            {rect && children && (
               <div
                 className=" bg-white/50 absolute z-20 w-full p-14 rounded-xl"
                 style={{
@@ -66,6 +72,9 @@ const Spotlight = ({
           <div
             className={`z-20 text-white absolute ${notesContainerClassName}`}
           >
+            {iconPosition === "top" && (
+              <div className={`relative ${iconContainerClassName}`}>{icon}</div>
+            )}
             <div className="text-3xl font-bold">{notes.title}</div>
             <div className="mt-5">{notes.content}</div>
             <div className="mt-5 flex gap-2">
@@ -84,6 +93,9 @@ const Spotlight = ({
                 {isLast ? "OK, Mengerti!" : "Selanjutnya"}
               </button>
             </div>
+            {iconPosition === "bottom" && (
+              <div className={`relative ${iconContainerClassName}`}>{icon}</div>
+            )}
           </div>
         </div>
       ) : (
